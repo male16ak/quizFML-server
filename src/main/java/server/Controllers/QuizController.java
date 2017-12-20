@@ -30,12 +30,12 @@ public class QuizController {
      * Denne metode sender et Quiz-objekt videre til DBWrapper, for at lagre objektet i databasen.
      * Derefter returneres objektet (quizCreated)
      */
-    public Quiz createQuiz (Quiz quiz) throws Exception {
+    public Quiz createQuiz (String quiz) throws Exception {
         log.writeLog(this.getClass().getName(), this, "We are now creating a quiz", 0);
 
-        Quiz quizCreated = db.createQuiz(quiz);
+        Quiz newQuiz = new Gson().fromJson(quiz, Quiz.class);
 
-        return quizCreated;
+        return db.createQuiz(newQuiz);
     }
 
     /**

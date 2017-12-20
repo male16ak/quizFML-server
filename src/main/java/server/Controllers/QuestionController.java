@@ -39,9 +39,10 @@ public class QuestionController {
      * Metode til at oprette question
      */
 
-    public Question createQuestion(Question question) throws Exception {
+    public Question createQuestion(String question) throws Exception {
 
-        Question isCreated = db.createQuestion(question);
-        return isCreated;
+        Question newQuestion = new Gson().fromJson(question, Question.class);
+
+        return db.createQuestion(newQuestion);
     }
 }

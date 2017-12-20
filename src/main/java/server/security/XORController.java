@@ -1,5 +1,6 @@
 package server.security;
 
+import com.google.gson.Gson;
 import server.utility.Globals;
 
 public class XORController {
@@ -19,7 +20,7 @@ public class XORController {
 
     /**
      *
-     * @param willBeEncrypted
+     * @param
      * @return willBeEncrypted
      * Denne metode modtager en string der skal krypteres (willBeEncrypted) og tjekker om Globals.config.getEncryptions Boolean
      * er slået til. Hvis den er, laves en StringBuilder med chars K, O, C og H. Derefter køres stringen igennem er for-loop der
@@ -27,7 +28,7 @@ public class XORController {
      * returneres stringen blot ukrypteret.
      */
     // Samzme metode skal laves på klienten for at dekryptere!!
-        public static String encryptDecryptXOR(String willBeEncrypted) {
+    /*   public static String encryptDecryptXOR(String willBeEncrypted) {
             //If: HER SKAL VI HAVE json.get("ENCRYPTION").getAsBoolean();
             if(Globals.config.getEncryption()) {
                 //Vi vælger selv værdierne til nøglen
@@ -46,6 +47,68 @@ public class XORController {
                 return willBeEncrypted;
             }
 
+        } */
+    public String encryptXOR(String toBeEncrypted) {
+
+        //check if encryption is true in the Config file
+        if (Globals.config.getEncryption()) {
+            //Vi vælger selv værdierne til nøglen
+            char[] key = {'K', 'O', 'C', 'H'};
+            //En StringBuilder er en klasse, der gør det muligt at ændre en string
+            StringBuilder isBeingEncrypted = new StringBuilder();
+
+            for (int i = 0; i < toBeEncrypted.length(); i++) {
+                isBeingEncrypted.append((char) (toBeEncrypted.charAt(i) ^ key[i % key.length]));
+            }
+
+            //convert StringBuilder to String and parse as Json
+            String isEncrypted = new Gson().toJson(isBeingEncrypted.toString());
+
+            //reuturn encrypted String
+            return isEncrypted;
+        }else {
+            //if encryption is false in the Config file return default value
+            return toBeEncrypted;
         }
+
+    }
+
+    //method to decrypt a string parsed as Json
+
+    /**
+     * Method responsible for decrypting an encrypted string that has been encrypted by XOR
+     * @param toBeDecrypted encrypted string to be decrypted
+     * @return the plaintext string
+     */
+    public String decryptXOR(String toBeDecrypted) {
+
+        //check if encryption is true in the Config file
+        if (Globals.config.getEncryption()) {
+            //Parse Json with encrypted Json object to a String with the Encrypted Object thats no longer a Json ( {"rewqr"} => rewqr )
+            //then Decrypt the object and assign it as a Object in Json format ( rewqr => {"username":"..." }
+            toBeDecrypted = new Gson().fromJson(toBeDecrypted, String.class);
+
+            //Vi vælger selv værdierne til nøglen
+            char[] key = {'K', 'O', 'C', 'H'};
+            //En StringBuilder er en klasse, der gør det muligt at ændre en string
+            StringBuilder beingDecrypted = new StringBuilder();
+
+            for (int i = 0; i < toBeDecrypted.length(); i++) {
+                beingDecrypted.append((char) (toBeDecrypted.charAt(i) ^ key[i % key.length]));
+            }
+
+            //convert StringBuilder to String
+            String isDecrypted = beingDecrypted.toString();
+
+            //return String
+            return isDecrypted;
+        }else {
+            //if encryption is false in the Config file return default value
+            return toBeDecrypted;
+        }
+
+    }
+
+
 
 }

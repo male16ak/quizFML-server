@@ -33,11 +33,13 @@ public class ChoiceController {
      * @return svar som er lavet i createdChoise
      * @throws Exception
      */
-        public Choice createChoice(Choice choice) throws Exception {
+        public Choice createChoice(String choice) throws Exception {
             log.writeLog(this.getClass().getName(), this, "We are now creating a choice", 0);
-            Choice createdChoice = db.createChoice(choice);
 
-            return createdChoice;
+            Choice newChoice = new Gson().fromJson(choice, Choice.class);
+
+            return db.createChoice(newChoice);
+
         }
 
 

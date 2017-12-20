@@ -18,6 +18,7 @@ public class UserEndpoint {
 
     Log log = new Log();
     UserController controller = new UserController();
+    XORController crypter = new XORController();
 
     /**
      * Metode der bruges til at hente alle users
@@ -30,10 +31,12 @@ public class UserEndpoint {
         log.writeLog(this.getClass().getName(), this, "We are now getting users", 2);
 
         ArrayList<User> users = controller.getUsers();
+        String output = new Gson().toJson(users);
+        String encryptedOutput = crypter.encryptXOR(output);
 
         return Response.status(200)
                 .type("application/json")
-                .entity(new Gson().toJson(users))
+                .entity(encryptedOutput)
                 .build();
 
     }
@@ -72,17 +75,19 @@ public class UserEndpoint {
 
         log.writeLog(this.getClass().getName(), this, "We are now creating user", 2);
 
+        String decryptUser = crypter.decryptXOR(user);
+        User createUser = controller.createUser(decryptUser);
 
-        User createUser = controller.createUser(user);
         String output = new Gson().toJson(createUser);
-        String encryptedOutput = XORController.encryptDecryptXOR(output);
-        encryptedOutput = new Gson().toJson(encryptedOutput);
+
+        output = crypter.encryptXOR(output);
+
 
         if(createUser != null) {
             return Response
                     .status(200)
                     .type("application/json")
-                    .entity(encryptedOutput)
+                    .entity(output)
                     .build();
         } else {
             return Response.status(400).entity("Error").build();
@@ -129,15 +134,18 @@ public class UserEndpoint {
 
         log.writeLog(this.getClass().getName(), this, "We are now authorizing user for login", 2);
 
-        User u = controller.login(data);
+        String decryptData = crypter.decryptXOR(data);
+
+        User u = controller.login(decryptData);
+
         String output = new Gson().toJson(u);
 
-        output = XORController.encryptDecryptXOR(output);
+        output = crypter.encryptXOR(output);
 
         if (u != null) {
             log.writeLog(this.getClass().getName(), this, "User logged in", 2);
 
-            return Response.status(200).type("application/json").entity(new Gson().toJson(output)).build();
+            return Response.status(200).type("application/json").entity(output).build();
         } else {
             log.writeLog(this.getClass().getName(), this, "User not logged in because of failure", 1);
             return Response.status(400).type("text/plain").entity("failure!").build();

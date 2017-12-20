@@ -22,6 +22,7 @@ public class ChoiceEndpoint {
 
     Log log = new Log();
     ChoiceController cController = new ChoiceController();
+    XORController crypter = new XORController();
 
 
     /**
@@ -38,9 +39,9 @@ public class ChoiceEndpoint {
 
         log.writeLog(this.getClass().getName(), this, "We are now getting Choice by Id parameter", 0);
         ArrayList<Choice> choices = cController.getChoices(questionID);
+
         String output = new Gson().toJson(choices);
-        String encryptedOutput = XORController.encryptDecryptXOR(output);
-        encryptedOutput = new Gson().toJson(encryptedOutput);
+        String encryptedOutput = crypter.encryptXOR(output);
 
         //Choice foundChoice =
         return Response
@@ -51,19 +52,26 @@ public class ChoiceEndpoint {
     }
 
     /**
-     * @param jsonChoice
+     * @param
      * @return Metoden indenholder en arraylist med alle choice. Ved at hente choisecontroller ved choiseID.
      *  Derefter krypteres outputtet og ændres fra Gson til Json. Tilsidst retuneres dette output.
      *  @throws Exception
      */
     @POST
-    public Response createChoice(String jsonChoice) throws Exception {
+    public Response createChoice(String choice) throws Exception {
         log.writeLog(this.getClass().getName(), this, "We are now creating choice", 2);
-        Choice createdChoice = cController.createChoice(new Gson().fromJson(jsonChoice, Choice.class));
 
-        String output = new Gson().toJson(createdChoice);
-        String encryptedOutput = XORController.encryptDecryptXOR(output);
-        encryptedOutput = new Gson().toJson(encryptedOutput);
+        System.out.println("Vi dekryptere: "+choice);
+
+        String decryptedChoice = crypter.decryptXOR(choice);
+
+        System.out.println("Vi kryptere: "+decryptedChoice);
+
+        Choice newChoice = cController.createChoice(decryptedChoice);
+
+        String output = new Gson().toJson(newChoice);
+
+        String encryptedOutput = crypter.encryptXOR(output);
 
         return Response
                 .status(200)

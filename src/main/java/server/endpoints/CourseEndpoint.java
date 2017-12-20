@@ -18,6 +18,7 @@ public class CourseEndpoint {
     Log log = new Log();
 
     String demoJson = new Gson().toJson("Courses");
+    XORController crypter = new XORController();
 
     /**
      *
@@ -31,9 +32,9 @@ public class CourseEndpoint {
         log.writeLog(this.getClass().getName(), this, "We are now getting courses", 2);
 
         ArrayList<Course> courses = courseController.getCourses();
+
         String output = new Gson().toJson(courses);
-        String encryptedOutput = XORController.encryptDecryptXOR(output);
-        encryptedOutput = new Gson().toJson(encryptedOutput);
+        String encryptedOutput = crypter.encryptXOR(output);
 
         return Response
                 .status(200)

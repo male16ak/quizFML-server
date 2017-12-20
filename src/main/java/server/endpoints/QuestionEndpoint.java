@@ -18,6 +18,8 @@ import java.util.ArrayList;
 public class QuestionEndpoint {
     Log log = new Log();
     QuestionController controller = new QuestionController();
+    XORController crypter = new XORController();
+
 
     /**
      *
@@ -30,10 +32,10 @@ public class QuestionEndpoint {
     @Path ("{quizId}")
     public Response getQuestions(@PathParam("quizId") int quizId) throws IOException, ClassNotFoundException {
         log.writeLog(this.getClass().getName(), this, "We are now getting questions", 2);
+
         ArrayList<Question> question = controller.getQuestions(quizId);
         String output = new Gson().toJson(question);
-        String encryptedOutput = XORController.encryptDecryptXOR(output);
-        encryptedOutput = new Gson().toJson(encryptedOutput);
+        String encryptedOutput = crypter.encryptXOR(output);
 
 
 
@@ -55,14 +57,22 @@ public class QuestionEndpoint {
      */
 
     @POST
-    public Response createQuestion(String jsonQuestion) throws Exception {
+    public Response createQuestion(String question) throws Exception {
 
         log.writeLog(this.getClass().getName(), this, "We are now creating a question", 2);
 
-        Question isCreated = controller.createQuestion(new Gson().fromJson(jsonQuestion, Question.class));
-        String output = new Gson().toJson(isCreated);
-        String encryptedOutput = XORController.encryptDecryptXOR(output);
-        encryptedOutput = new Gson().toJson(encryptedOutput);
+        System.out.println("Vi dekryptere: "+question);
+
+        String decryptedQuestion = crypter.decryptXOR(question);
+
+        System.out.println("Vi dekryptere: "+decryptedQuestion);
+
+        Question newQuestion = controller.createQuestion(decryptedQuestion);
+
+        String output = new Gson().toJson(newQuestion);
+
+        String encryptedOutput = crypter.encryptXOR(output);
+
 
         return Response
                 .status(200)

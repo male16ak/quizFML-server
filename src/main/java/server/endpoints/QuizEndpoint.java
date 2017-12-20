@@ -19,6 +19,7 @@ public class QuizEndpoint {
     Log log = new Log();
 
     QuizController controller = new QuizController();
+    XORController crypter = new XORController();
 
     /**
      *
@@ -36,15 +37,16 @@ public class QuizEndpoint {
         log.writeLog(this.getClass().getName(), this, "We are getting quizzes", 2);
 
         ArrayList<Quiz> allQuizzes = controller.getQuizzes(courseId);
+
         String output = new Gson().toJson(allQuizzes);
+        String encryptedOutput = crypter.encryptXOR(output);
 
 
-        output = XORController.encryptDecryptXOR(output);
 
         return Response
                 .status(200)
                 .type("application/json")
-                .entity(new Gson().toJson(output))
+                .entity(encryptedOutput)
                 .build();
     }
 
@@ -61,11 +63,18 @@ public class QuizEndpoint {
 
         log.writeLog(this.getClass().getName(), this, "We are creating a quiz", 0);
 
-        Quiz foundQuiz = controller.createQuiz(new Gson().fromJson(quiz, Quiz.class));
+        System.out.println("Vi dekryptere: "+quiz);
 
-        String output = new Gson().toJson(foundQuiz);
-        String encryptedOutput = XORController.encryptDecryptXOR(output);
-        encryptedOutput = new Gson().toJson(encryptedOutput);
+        String decryptedQuiz = crypter.decryptXOR(quiz);
+
+        System.out.println("dekrypteret:"+ decryptedQuiz);
+
+        Quiz newQuiz = controller.createQuiz(decryptedQuiz);
+
+        String output = new Gson().toJson(newQuiz);
+
+        String encryptedOutput = crypter.encryptXOR(output);
+
 
         return Response
                 .status(200)
