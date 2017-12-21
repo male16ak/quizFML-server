@@ -52,7 +52,7 @@ public class ChoiceEndpoint {
     }
 
     /**
-     * @param
+     * @param choice
      * @return Metoden indenholder en arraylist med alle choice. Ved at hente choisecontroller ved choiseID.
      *  Derefter krypteres outputtet og ændres fra Gson til Json. Tilsidst retuneres dette output.
      *  @throws Exception
@@ -61,11 +61,7 @@ public class ChoiceEndpoint {
     public Response createChoice(String choice) throws Exception {
         log.writeLog(this.getClass().getName(), this, "We are now creating choice", 2);
 
-        System.out.println("Vi dekryptere: "+choice);
-
         String decryptedChoice = crypter.decryptXOR(choice);
-
-        System.out.println("Vi kryptere: "+decryptedChoice);
 
         Choice newChoice = cController.createChoice(decryptedChoice);
 

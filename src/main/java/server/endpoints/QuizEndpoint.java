@@ -63,11 +63,7 @@ public class QuizEndpoint {
 
         log.writeLog(this.getClass().getName(), this, "We are creating a quiz", 0);
 
-        System.out.println("Vi dekryptere: "+quiz);
-
         String decryptedQuiz = crypter.decryptXOR(quiz);
-
-        System.out.println("dekrypteret:"+ decryptedQuiz);
 
         Quiz newQuiz = controller.createQuiz(decryptedQuiz);
 

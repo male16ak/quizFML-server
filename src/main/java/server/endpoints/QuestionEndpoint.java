@@ -51,7 +51,7 @@ public class QuestionEndpoint {
 
     /**
      *
-     * @param jsonQuestion
+     * @param question
      * @return Response
      * Metode til at oprette et spørgsmål i databasen ved at få en json streng af et spørgsmål
      */
@@ -61,11 +61,7 @@ public class QuestionEndpoint {
 
         log.writeLog(this.getClass().getName(), this, "We are now creating a question", 2);
 
-        System.out.println("Vi dekryptere: "+question);
-
         String decryptedQuestion = crypter.decryptXOR(question);
-
-        System.out.println("Vi dekryptere: "+decryptedQuestion);
 
         Question newQuestion = controller.createQuestion(decryptedQuestion);
 
