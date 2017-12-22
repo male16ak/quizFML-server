@@ -32,17 +32,13 @@ public static String hash(String password){
      * @param createdTime
      * @return En salted og hashet string
      */
-
     //Vi benytter createtime til vores salt, som er fundet ved linket:
     // https://stackoverflow.com/questions/12663710/android-datetime-to-11-digit-unix-timestamp
-
     public static String hashWithSalt(String password, String username, Long createdTime){
     String salt = Digester.performHashing(username+createdTime.toString());
     password = password + salt;
     return Digester.performHashing(password);
-}
-
-    /**
+}/**
      * Metode der bruges til at hashe en String
      * @param str
      * @return hashed string
